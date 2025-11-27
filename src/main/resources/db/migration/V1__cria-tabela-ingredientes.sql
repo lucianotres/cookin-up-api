@@ -1,0 +1,12 @@
+create table categoria (
+    id serial primary key,
+    nome varchar(100) not null,
+    imagem varchar(4000)
+);
+
+create table ingrediente (
+    id serial primary key,
+    id_categoria integer references categoria(id),
+    nome varchar(100) not null
+);
+

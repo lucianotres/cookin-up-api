@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  spring-api-dev:
+    image: eclipse-temurin:21-jdk
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ~/.m2:/root/.m2 # cache do Maven
+    command: ./mvnw spring-boot:run -Dspring-boot.run.jvmArguments="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005"
+    ports:
+      - "8080:8080"
+      - "5005:5005"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/cookin_up
