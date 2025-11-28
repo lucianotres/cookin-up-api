@@ -1,18 +1,8 @@
 package br.dev.ltres.cookin_up_api.dto.categoria;
 
-import org.springframework.lang.NonNull;
-
-import br.dev.ltres.cookin_up_api.model.Categoria;
+import jakarta.validation.constraints.NotBlank;
 
 public record CategoriaAdicionaDTO(
-                String nome,
+                @NotBlank String nome,
                 String imagem) {
-
-        @NonNull
-        public Categoria toEntity() {
-                return new Categoria(
-                                null,
-                                this.nome,
-                                this.imagem);
-        }
 }
