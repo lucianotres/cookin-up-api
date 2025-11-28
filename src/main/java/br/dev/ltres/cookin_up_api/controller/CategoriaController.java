@@ -9,6 +9,7 @@ import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.model.Categoria;
 import br.dev.ltres.cookin_up_api.repository.CategoriaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/categorias")
@@ -49,10 +49,11 @@ public class CategoriaController {
             return ResponseEntity.badRequest().build();
         }
 
-        var categoria = categoriaRepository.getReferenceByIdAndAtivoTrue(id);
+        var categoria = categoriaRepository
+                .findByIdAndAtivoTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
 
-        return categoria == null ? ResponseEntity.notFound().build()
-                : ResponseEntity.ok(new CategoriaDetalhadaDTO(categoria));
+        return ResponseEntity.ok(new CategoriaDetalhadaDTO(categoria));
     }
 
     @PostMapping
@@ -78,10 +79,9 @@ public class CategoriaController {
             return ResponseEntity.badRequest().build();
         }
 
-        var categoriaExistente = categoriaRepository.getReferenceByIdAndAtivoTrue(categoria.id());
-        if (categoriaExistente == null) {
-            return ResponseEntity.notFound().build();
-        }
+        var categoriaExistente = categoriaRepository
+                .findByIdAndAtivoTrue(categoria.id())
+                .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
 
         categoriaExistente.atualizaDados(categoria);
 

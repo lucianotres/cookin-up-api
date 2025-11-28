@@ -1,5 +1,7 @@
 package br.dev.ltres.cookin_up_api.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +14,7 @@ import br.dev.ltres.cookin_up_api.model.Categoria;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
-    Categoria getReferenceByIdAndAtivoTrue(@NonNull Long Id);
+    Optional<Categoria> findByIdAndAtivoTrue(@NonNull Long Id);
 
     @NonNull
     Page<Categoria> findByAtivoTrue(@NonNull Pageable paginacao);
