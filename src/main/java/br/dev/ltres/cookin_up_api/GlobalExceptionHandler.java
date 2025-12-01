@@ -44,4 +44,9 @@ public class GlobalExceptionHandler {
                 .body(criaBodyComErro(HttpStatus.BAD_REQUEST, "Erro de validação", String.join("; ", erros)));
     }
 
+    @ExceptionHandler(RequisicaoInvalidaException.class)
+    public ResponseEntity<Map<String, Object>> handleRequisicaoInvalida(RequisicaoInvalidaException ex) {
+        return criaRespostaErroPadrao(ex, HttpStatus.BAD_REQUEST, "Erro de validação na requisição");
+    }
+
 }
