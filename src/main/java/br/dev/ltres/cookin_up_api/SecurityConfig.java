@@ -12,14 +12,11 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // http.authorizeHttpRequests(auth -> auth
-        // .requestMatchers("/public/**").permitAll()
-        // .anyRequest().authenticated())
-        // .oauth2ResourceServer(oauth2 -> oauth2
-        // .jwt(jwt -> jwt.jwtAuthenticationConverter(new
-        // MeuJwtAuthenticationConverter())));
-
-        http.authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers("/public/**").permitAll()
+                .anyRequest().hasRole("AccPadrao"))
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt.jwtAuthenticationConverter(new MeuJwtAuthenticationConverter())));
 
         return http.build();
     }
