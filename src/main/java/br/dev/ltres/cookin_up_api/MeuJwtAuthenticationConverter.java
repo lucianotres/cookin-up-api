@@ -12,5 +12,7 @@ public class MeuJwtAuthenticationConverter extends JwtAuthenticationConverter {
         delegate.setAuthoritiesClaimName("roles");
 
         this.setJwtGrantedAuthoritiesConverter(delegate);
+
+        this.setPrincipalClaimName("name");
     }
 }
