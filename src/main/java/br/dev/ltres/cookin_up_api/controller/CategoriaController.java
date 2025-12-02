@@ -9,10 +9,13 @@ import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.model.Categoria;
 import br.dev.ltres.cookin_up_api.repository.CategoriaRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,8 +37,9 @@ public class CategoriaController {
     private CategoriaRepository categoriaRepository;
 
     @GetMapping
+    @Operation(summary = "Listar categorias", description = "Lista todas as categorias ativas cadastradas no sistema")
     public ResponseEntity<Page<CategoriaDetalhadaDTO>> getListar(
-            @PageableDefault(size = 100, sort = { "nome" }) @NonNull Pageable paginacao) {
+            @PageableDefault(size = 100, sort = { "nome" }) @ParameterObject @NonNull Pageable paginacao) {
         var listaCategorias = categoriaRepository
                 .findByAtivoTrue(paginacao)
                 .map(CategoriaDetalhadaDTO::new);
@@ -44,7 +48,9 @@ public class CategoriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoriaDetalhadaDTO> getDetalhe(@PathVariable Long id) {
+    @Operation(summary = "Detalhar categoria", description = "Detalha uma categoria ativa cadastrada no sistema pelo ID")
+    public ResponseEntity<CategoriaDetalhadaDTO> getDetalhe(
+            @PathVariable @Parameter(description = "ID da categoria", example = "3") Long id) {
         if (id == null) {
             return ResponseEntity.badRequest().build();
         }
@@ -58,6 +64,7 @@ public class CategoriaController {
 
     @PostMapping
     @Transactional
+    @Operation(summary = "Adicionar categoria", description = "Adiciona uma nova categoria ao sistema")
     public ResponseEntity<CategoriaDetalhadaDTO> postAdiciona(
             @RequestBody @Valid CategoriaAdicionaDTO categoria,
             UriComponentsBuilder uriBuilder) {
@@ -73,6 +80,7 @@ public class CategoriaController {
 
     @PutMapping
     @Transactional
+    @Operation(summary = "Atualizar categoria", description = "Atualiza uma categoria ativa cadastrada no sistema")
     public ResponseEntity<CategoriaDetalhadaDTO> putAtualiza(
             @RequestBody @Valid CategoriaAtualizaDTO categoria) {
         if (categoria == null) {
@@ -90,6 +98,7 @@ public class CategoriaController {
 
     @DeleteMapping("/{id}")
     @Transactional
+    @Operation(summary = "Remover categoria", description = "Remove (desativa) uma categoria ativa cadastrada no sistema pelo ID")
     public ResponseEntity<Void> deleteRemove(@PathVariable Long id) {
         var desativouQtd = categoriaRepository.desativar(id);
         if (desativouQtd == 0) {

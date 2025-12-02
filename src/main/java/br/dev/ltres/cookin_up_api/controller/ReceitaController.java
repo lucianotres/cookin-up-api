@@ -7,6 +7,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAdicionaDTO;
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.services.ReceitaService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -22,6 +23,7 @@ public class ReceitaController {
     private final ReceitaService receitaService;
 
     @PostMapping
+    @Operation(summary = "Adicionar nova receita", description = "Adiciona uma nova receita ao sistema")
     public ResponseEntity<ReceitaDetalhadaDTO> postAdiciona(
             @RequestBody @Valid ReceitaAdicionaDTO receita,
             UriComponentsBuilder uriBuilder) {
