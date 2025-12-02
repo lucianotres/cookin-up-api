@@ -1,4 +1,4 @@
-package br.dev.ltres.cookin_up_api;
+package br.dev.ltres.cookin_up_api.exception;
 
 import java.util.Map;
 

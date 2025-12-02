@@ -1,4 +1,4 @@
-package br.dev.ltres.cookin_up_api;
+package br.dev.ltres.cookin_up_api.config;
 
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;

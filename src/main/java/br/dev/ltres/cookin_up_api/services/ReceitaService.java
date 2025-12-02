@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import br.dev.ltres.cookin_up_api.RequisicaoInvalidaException;
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAdicionaDTO;
+import br.dev.ltres.cookin_up_api.exception.RequisicaoInvalidaException;
 import br.dev.ltres.cookin_up_api.model.Ingrediente;
 import br.dev.ltres.cookin_up_api.model.Receita;
 import br.dev.ltres.cookin_up_api.repository.IngredienteRepository;
