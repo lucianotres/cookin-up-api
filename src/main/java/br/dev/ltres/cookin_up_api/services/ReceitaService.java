@@ -2,6 +2,8 @@ package br.dev.ltres.cookin_up_api.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,10 @@ public class ReceitaService {
     }
 
     public Receita buscarReceitaId(@NonNull Long id) {
-        return receitaRepository.findById(id).orElse(null);
+        return receitaRepository.findByIdAndAtivoTrue(id).orElse(null);
+    }
+
+    public Page<Receita> listarReceitas(@NonNull Pageable pageable) {
+        return receitaRepository.findByAtivoTrue(pageable);
     }
 }

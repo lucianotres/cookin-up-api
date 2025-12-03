@@ -10,6 +10,9 @@ import org.springframework.boot.test.autoconfigure.json.AutoConfigureJsonTesters
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.json.JacksonTester;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -96,7 +99,8 @@ public class ReceitaControllerTests {
     }
 
     @Test
-    void testGetDetalhadaWithValidId() throws Exception {
+    @DisplayName("Deve retornar receita detalhada com ID existente")
+    void testGetReceitaDetalhadaComId() throws Exception {
         when(receitaService.buscarReceitaId(1L)).thenReturn(receita);
 
         mockMvc.perform(get("/receitas/1"))
@@ -108,12 +112,70 @@ public class ReceitaControllerTests {
     }
 
     @Test
-    void testGetDetalhadaWithNonExistentId() throws Exception {
+    @DisplayName("Deve retornar 404 ao buscar receita detalhada com ID inexistente")
+    void testGetReceitaDetalhadaComIdInexistente() throws Exception {
         when(receitaService.buscarReceitaId(999L)).thenReturn(null);
 
         mockMvc.perform(get("/receitas/999"))
                 .andExpect(status().isNotFound());
 
         verify(receitaService, times(1)).buscarReceitaId(999L);
+    }
+
+    private void mockaListaDeReceitas(int tamanhoDaPagina) {
+        List<Receita> receitas = List.of(
+                new Receita(1l, "Bolo de Chocolate", "", true, List.of()),
+                new Receita(2l, "Torta de Limão", "", true, List.of()),
+                new Receita(3l, "Torta de Limão Azedo", "", true, List.of()));
+
+        var pageable = PageRequest.of(0, tamanhoDaPagina);
+        var page = new PageImpl<>(receitas.subList(0, Math.min(tamanhoDaPagina, receitas.size())), pageable,
+                receitas.size());
+
+        when(receitaService.listarReceitas(any(Pageable.class)))
+                .thenReturn(page);
+    }
+
+    @Test
+    @DisplayName("Deve retornar paginação correta na lista de receitas")
+    void testPaginacaoDaListaDeReceitas() throws Exception {
+        mockaListaDeReceitas(2);
+
+        mockMvc.perform(get("/receitas")
+                .param("page", "0")
+                .param("size", "2")
+                .param("sort", "nome"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    @DisplayName("Deve retornar lista vazia quando não houver receitas cadastradas")
+    void testRetornaListaVaziaDeReceitas() throws Exception {
+        when(receitaService.listarReceitas(any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(), PageRequest.of(0, 100), 0));
+
+        mockMvc.perform(get("/receitas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
+    @DisplayName("Deve retornar lista normal de receitas")
+    void testRetornaListaNormalDeReceitas() throws Exception {
+        mockaListaDeReceitas(100);
+
+        mockMvc.perform(get("/receitas"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].id").value(1))
+                .andExpect(jsonPath("$[0].nome").value("Bolo de Chocolate"))
+                .andExpect(jsonPath("$[1].id").value(2))
+                .andExpect(jsonPath("$[1].nome").value("Torta de Limão"))
+                .andExpect(jsonPath("$[2].id").value(3))
+                .andExpect(jsonPath("$[2].nome").value("Torta de Limão Azedo"));
     }
 }
