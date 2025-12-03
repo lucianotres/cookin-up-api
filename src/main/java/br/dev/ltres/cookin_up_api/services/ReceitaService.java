@@ -2,6 +2,7 @@ package br.dev.ltres.cookin_up_api.services;
 
 import java.util.List;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAdicionaDTO;
@@ -10,7 +11,6 @@ import br.dev.ltres.cookin_up_api.model.Ingrediente;
 import br.dev.ltres.cookin_up_api.model.Receita;
 import br.dev.ltres.cookin_up_api.repository.IngredienteRepository;
 import br.dev.ltres.cookin_up_api.repository.ReceitaRepository;
-import jakarta.annotation.Nonnull;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class ReceitaService {
     private final IngredienteRepository ingredienteRepository;
 
     @Transactional
-    public Receita salvarNovaReceita(@Nonnull @Valid ReceitaAdicionaDTO receita) throws RequisicaoInvalidaException {
+    public Receita salvarNovaReceita(@Valid ReceitaAdicionaDTO receita) throws RequisicaoInvalidaException {
         var listaIngredientes = obterIngredientesPeloNome(receita);
 
         var novaReceita = new Receita(null, receita.nome(), receita.imagem(), true, listaIngredientes);
@@ -43,5 +43,9 @@ public class ReceitaService {
             throw new RequisicaoInvalidaException("Um ou mais ingredientes não foram encontrados");
 
         return listaIngredientes;
+    }
+
+    public Receita buscarReceitaId(@NonNull Long id) {
+        return receitaRepository.findById(id).orElse(null);
     }
 }

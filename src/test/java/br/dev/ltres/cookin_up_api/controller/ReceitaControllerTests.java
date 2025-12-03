@@ -2,6 +2,7 @@ package br.dev.ltres.cookin_up_api.controller;
 
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ import br.dev.ltres.cookin_up_api.model.Receita;
 import br.dev.ltres.cookin_up_api.services.ReceitaService;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -41,6 +44,19 @@ public class ReceitaControllerTests {
 
     @MockitoBean
     private ReceitaService receitaService;
+
+    private Receita receita;
+
+    @BeforeEach
+    void setUp() {
+        receita = new Receita(1l, "Bolo de Chocolate", "bolo.png", true, List.of(
+                new Ingrediente(1l, "farinha de trigo"),
+                new Ingrediente(2l, "açúcar"),
+                new Ingrediente(3l, "chocolate em pó"),
+                new Ingrediente(4l, "fermento em pó"),
+                new Ingrediente(5l, "ovo"),
+                new Ingrediente(6l, "leite")));
+    }
 
     @Test
     @DisplayName("Deve cadastrar uma nova receita com sucesso")
@@ -77,5 +93,27 @@ public class ReceitaControllerTests {
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.nome").value("Bolo de Chocolate"))
                 .andExpect(jsonPath("$.imagem").value("bolo.png"));
+    }
+
+    @Test
+    void testGetDetalhadaWithValidId() throws Exception {
+        when(receitaService.buscarReceitaId(1L)).thenReturn(receita);
+
+        mockMvc.perform(get("/receitas/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.nome").value("Bolo de Chocolate"));
+
+        verify(receitaService, times(1)).buscarReceitaId(1L);
+    }
+
+    @Test
+    void testGetDetalhadaWithNonExistentId() throws Exception {
+        when(receitaService.buscarReceitaId(999L)).thenReturn(null);
+
+        mockMvc.perform(get("/receitas/999"))
+                .andExpect(status().isNotFound());
+
+        verify(receitaService, times(1)).buscarReceitaId(999L);
     }
 }
