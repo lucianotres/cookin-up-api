@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>br.dev.ltres</groupId>
 	<artifactId>cookin-up-api</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${revision}</version>
 	<name>cookin-up-api</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -29,6 +29,7 @@
 	</scm>
 	<properties>
 		<java.version>21</java.version>
+		<revision>0.0.1-SNAPSHOT</revision>
 	</properties>
 	<dependencies>
 		<dependency>
