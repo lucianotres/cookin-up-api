@@ -6,7 +6,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN mvn clean package -Pprod -DskipTests
 
 
 FROM eclipse-temurin:21-jdk-alpine AS production-stage
@@ -16,5 +16,6 @@ WORKDIR /app
 COPY --from=build-stage /app/target/*.jar app.jar
 
 EXPOSE 8080
+ENV SPRING_PROFILES_ACTIVE=prod
 
 ENTRYPOINT ["java","-jar","app.jar"]
