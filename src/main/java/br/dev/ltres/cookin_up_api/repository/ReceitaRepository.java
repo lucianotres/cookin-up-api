@@ -1,5 +1,6 @@
 package br.dev.ltres.cookin_up_api.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +16,8 @@ import br.dev.ltres.cookin_up_api.model.Receita;
 public interface ReceitaRepository extends JpaRepository<Receita, Long> {
 
     Optional<Receita> findByIdAndAtivoTrue(@NonNull Long Id);
+
+    List<Receita> findByAtivoTrue();
 
     @NonNull
     Page<Receita> findByAtivoTrue(@NonNull Pageable paginacao);

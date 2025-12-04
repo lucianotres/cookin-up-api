@@ -1,5 +1,6 @@
 package br.dev.ltres.cookin_up_api.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,6 +16,9 @@ import br.dev.ltres.cookin_up_api.model.Categoria;
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     Optional<Categoria> findByIdAndAtivoTrue(@NonNull Long Id);
+
+    @NonNull
+    List<Categoria> findByAtivoTrue();
 
     @NonNull
     Page<Categoria> findByAtivoTrue(@NonNull Pageable paginacao);
