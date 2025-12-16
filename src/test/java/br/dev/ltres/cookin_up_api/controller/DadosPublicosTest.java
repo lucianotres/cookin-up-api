@@ -48,9 +48,9 @@ class DadosPublicosTest {
     void testGetCategoriasRetornaListaValida() throws Exception {
         var listaCategorias = List.of(
                 new Categoria(1l, "Bebidas", "imagem.jpg", true, List.of(
-                        new Ingrediente(1L, 1L, "Água", null))),
+                        new Ingrediente(1L, "Água", null))),
                 new Categoria(2l, "Sobremesas", "imagem.jpg", true, List.of(
-                        new Ingrediente(2L, 1L, "Açúcar", null))));
+                        new Ingrediente(2L, "Açúcar", null))));
 
         when(categoriaRepository.findByAtivoTrue()).thenReturn(listaCategorias);
 
@@ -80,10 +80,10 @@ class DadosPublicosTest {
     void testGetReceitasRetornaListaValida() throws Exception {
         var listaReceitas = List.of(
                 new Receita(1l, "Suco de Laranja", "imagem.jpg", true, List.of(
-                        new Ingrediente(1L, 1L, "Laranja", null))),
+                        new Ingrediente(1L, "Laranja", null))),
                 new Receita(2l, "Pudim", "imagem.jpg", true, List.of(
-                        new Ingrediente(2L, 1L, "Leite", null),
-                        new Ingrediente(3L, 1L, "Ovo", null))));
+                        new Ingrediente(2L, "Leite", null),
+                        new Ingrediente(3L, "Ovo", null))));
 
         when(receitaRepository.findByAtivoTrue()).thenReturn(listaReceitas);
 
