@@ -92,6 +92,7 @@ public class CategoriaController {
                 .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
 
         categoriaExistente.atualizaDados(categoria);
+        categoriaExistente = categoriaRepository.save(categoriaExistente);
 
         return ResponseEntity.ok(new CategoriaDetalhadaDTO(categoriaExistente));
     }

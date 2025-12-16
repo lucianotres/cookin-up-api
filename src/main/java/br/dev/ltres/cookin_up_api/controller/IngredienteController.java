@@ -8,6 +8,7 @@ import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaAdicionaDTO;
 import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAdicionaDTO;
+import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteDetalhaDTO;
 import br.dev.ltres.cookin_up_api.model.Categoria;
 import br.dev.ltres.cookin_up_api.model.Ingrediente;
@@ -92,42 +93,39 @@ public class IngredienteController {
         return ResponseEntity.created(uri).body(new IngredienteDetalhaDTO(novoIngrediente));
     }
 
-    /*
-     * @PutMapping
-     * 
-     * @Transactional
-     * 
-     * @Operation(summary = "Atualizar categoria", description =
-     * "Atualiza uma categoria ativa cadastrada no sistema")
-     * public ResponseEntity<CategoriaDetalhadaDTO> putAtualiza(
-     * 
-     * @RequestBody @Valid CategoriaAtualizaDTO categoria) {
-     * if (categoria == null) {
-     * return ResponseEntity.badRequest().build();
-     * }
-     * 
-     * var categoriaExistente = ingredienteRepository
-     * .findByIdAndAtivoTrue(categoria.id())
-     * .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada"));
-     * 
-     * categoriaExistente.atualizaDados(categoria);
-     * 
-     * return ResponseEntity.ok(new CategoriaDetalhadaDTO(categoriaExistente));
-     * }
-     * 
-     * @DeleteMapping("/{id}")
-     * 
-     * @Transactional
-     * 
-     * @Operation(summary = "Remover categoria", description =
-     * "Remove (desativa) uma categoria ativa cadastrada no sistema pelo ID")
-     * public ResponseEntity<Void> deleteRemove(@PathVariable Long id) {
-     * var desativouQtd = ingredienteRepository.desativar(id);
-     * if (desativouQtd == 0) {
-     * return ResponseEntity.notFound().build();
-     * }
-     * 
-     * return ResponseEntity.noContent().build();
-     * }
-     */
+    @PutMapping
+    @Transactional
+    @Operation(summary = "Atualizar ingrediente", description = "Atualiza um ingrediente cadastrado no sistema")
+    public ResponseEntity<IngredienteDetalhaDTO> putAtualiza(
+            @RequestBody @Valid IngredienteAtualizaDTO ingrediente) {
+        if (ingrediente == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        var ingredienteExistente = ingredienteRepository
+                .findById(ingrediente.id())
+                .orElseThrow(() -> new EntityNotFoundException("Ingrediente não encontrado"));
+
+        var idCategoria = ingrediente.id_categoria();
+        var categoriaIngrediente = idCategoria == null ? null
+                : categoriaRepository
+                        .findById(idCategoria)
+                        .orElseThrow(() -> new EntityNotFoundException("Categoria não encontrada para o ingrediente"));
+
+        ingredienteExistente.atualizaDados(ingrediente, categoriaIngrediente);
+        ingredienteExistente = ingredienteRepository.save(ingredienteExistente);
+
+        return ResponseEntity.ok(new IngredienteDetalhaDTO(ingredienteExistente));
+    }
+
+    @DeleteMapping("/{id}")
+    @Transactional
+    @Operation(summary = "Remover ingrediente", description = "Remove um ingrediente cadastrado no sistema pelo ID")
+    public ResponseEntity<Void> deleteRemove(@PathVariable @NonNull Long id) {
+        if (!ingredienteRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        ingredienteRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

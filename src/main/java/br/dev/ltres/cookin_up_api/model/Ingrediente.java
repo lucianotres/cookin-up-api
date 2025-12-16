@@ -1,6 +1,7 @@
 package br.dev.ltres.cookin_up_api.model;
 
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAdicionaDTO;
+import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAtualizaDTO;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -35,5 +36,13 @@ public class Ingrediente {
 
     public Ingrediente(IngredienteAdicionaDTO ingrediente) {
         this.nome = ingrediente.nome();
+    }
+
+    public void atualizaDados(IngredienteAtualizaDTO ingrediente, Categoria categoria) {
+        if (ingrediente.nome() != null)
+            this.nome = ingrediente.nome();
+
+        if (categoria != null)
+            this.categoria = categoria;
     }
 }
