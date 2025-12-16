@@ -53,12 +53,12 @@ public class ReceitaControllerTests {
     @BeforeEach
     void setUp() {
         receita = new Receita(1l, "Bolo de Chocolate", "bolo.png", true, List.of(
-                new Ingrediente(1l, "farinha de trigo"),
-                new Ingrediente(2l, "açúcar"),
-                new Ingrediente(3l, "chocolate em pó"),
-                new Ingrediente(4l, "fermento em pó"),
-                new Ingrediente(5l, "ovo"),
-                new Ingrediente(6l, "leite")));
+                new Ingrediente(1l, 1l, "farinha de trigo", null),
+                new Ingrediente(2l, 1l, "açúcar", null),
+                new Ingrediente(3l, 1l, "chocolate em pó", null),
+                new Ingrediente(4l, 1l, "fermento em pó", null),
+                new Ingrediente(5l, 1l, "ovo", null),
+                new Ingrediente(6l, 1l, "leite", null)));
     }
 
     @Test
@@ -77,7 +77,7 @@ public class ReceitaControllerTests {
                 .thenAnswer(invocation -> {
                     var dto = invocation.getArgument(0, ReceitaAdicionaDTO.class);
                     var ingredientesRetorno = dto.ingredientes().stream().map(ing -> {
-                        return new Ingrediente(1l, ing);
+                        return new Ingrediente(1l, 1l, ing, null);
                     }).toList();
                     return new Receita(
                             1l,
