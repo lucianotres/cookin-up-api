@@ -23,6 +23,9 @@ public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
     @NonNull
     Page<Categoria> findByAtivoTrue(@NonNull Pageable paginacao);
 
+    @NonNull
+    List<Categoria> findTop10ByAtivoTrueAndNomeContainingIgnoreCase(@NonNull String termo);
+
     @Modifying
     @Query("update Categoria c set c.ativo = false where c.id = :id and c.ativo = true")
     int desativar(@Param("id") Long id);
