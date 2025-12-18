@@ -1,16 +1,14 @@
 package br.dev.ltres.cookin_up_api.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaAdicionaDTO;
-import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAdicionaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteDetalhaDTO;
-import br.dev.ltres.cookin_up_api.model.Categoria;
 import br.dev.ltres.cookin_up_api.model.Ingrediente;
 import br.dev.ltres.cookin_up_api.repository.CategoriaRepository;
 import br.dev.ltres.cookin_up_api.repository.IngredienteRepository;
@@ -19,6 +17,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,5 +127,13 @@ public class IngredienteController {
         }
         ingredienteRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/filtrado")
+    public ResponseEntity<List<IngredienteDetalhaDTO>> getFiltrado(
+            @RequestParam @Parameter(description = "Termo a ser pesquisado", example = "Alho") @NonNull String termo) {
+
+        var listaFiltrada = ingredienteRepository.findTop10ByNomeContainingIgnoreCase(termo);
+        return ResponseEntity.ok(listaFiltrada.stream().map(IngredienteDetalhaDTO::new).toList());
     }
 }

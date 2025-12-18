@@ -12,9 +12,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.util.List;
-
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -43,13 +42,11 @@ public class ReceitaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ReceitaDetalhadaDTO>> getLista(
+    public ResponseEntity<Page<ReceitaDetalhadaDTO>> getLista(
             @PageableDefault(size = 100, sort = { "nome" }) @ParameterObject @NonNull Pageable pageable) {
-        var receitas = receitaService.listarReceitas(pageable);
-        var receitasDTO = receitas.stream()
-                .map(ReceitaDetalhadaDTO::new)
-                .toList();
-        return ResponseEntity.ok(receitasDTO);
+        var receitas = receitaService.listarReceitas(pageable)
+                .map(ReceitaDetalhadaDTO::new);
+        return ResponseEntity.ok(receitas);
     }
 
     @PostMapping
