@@ -8,6 +8,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAdicionaDTO;
+import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAtualizaDTO;
 import br.dev.ltres.cookin_up_api.exception.RequisicaoInvalidaException;
 import br.dev.ltres.cookin_up_api.model.Ingrediente;
 import br.dev.ltres.cookin_up_api.model.Receita;
@@ -26,7 +27,11 @@ public class ReceitaService {
 
     @Transactional
     public Receita salvarNovaReceita(@Valid ReceitaAdicionaDTO receita) throws RequisicaoInvalidaException {
-        var listaIngredientes = obterIngredientesPeloNome(receita);
+        var ingredientes = receita.ingredientes();
+        if (ingredientes == null || ingredientes.isEmpty())
+            throw new RequisicaoInvalidaException("A receita deve conter ao menos um ingrediente");
+
+        var listaIngredientes = obterIngredientesPeloNome(ingredientes);
 
         var novaReceita = new Receita(null, receita.nome(), receita.imagem(), true, listaIngredientes);
         var receitaAdicionada = receitaRepository.save(novaReceita);
@@ -34,17 +39,38 @@ public class ReceitaService {
         return receitaAdicionada;
     }
 
-    private List<Ingrediente> obterIngredientesPeloNome(ReceitaAdicionaDTO receita) {
-        var ingredientes = receita.ingredientes();
-        if (ingredientes == null || ingredientes.isEmpty())
-            throw new RequisicaoInvalidaException("A receita deve conter ao menos um ingrediente");
+    @Transactional
+    @SuppressWarnings("null")
+    public Receita salvarAtualizaReceita(@Valid ReceitaAtualizaDTO receita) throws RequisicaoInvalidaException {
+        var receitaEntity = receitaRepository
+                .findByIdAndAtivoTrue(receita.id())
+                .orElseThrow(() -> new RequisicaoInvalidaException("Receita não encontrada"));
 
-        var listaIngredientes = ingredienteRepository.findAllByNomeIn(ingredientes);
-        if (!ingredientes.stream()
+        if (receita.nome() != null)
+            receitaEntity.setNome(receita.nome());
+
+        if (receita.imagem() != null)
+            receitaEntity.setImagem(receita.imagem());
+
+        if (receita.ingredientes() != null)
+            receitaEntity.setIngredientes(obterIngredientesPeloNome(receita.ingredientes()));
+
+        return receitaRepository.save(receitaEntity);
+    }
+
+    private List<Ingrediente> obterIngredientesPeloNome(List<String> receitaIngredientes) {
+        var listaIngredientes = ingredienteRepository.findAllByNomeIn(receitaIngredientes);
+        if (!receitaIngredientes.stream()
                 .allMatch(i -> listaIngredientes.stream().anyMatch(li -> li.getNome().equalsIgnoreCase(i))))
             throw new RequisicaoInvalidaException("Um ou mais ingredientes não foram encontrados");
 
         return listaIngredientes;
+    }
+
+    @Transactional
+    public boolean desativarReceita(@NonNull Long id) {
+        var desativouQtd = receitaRepository.desativar(id);
+        return desativouQtd > 0;
     }
 
     public Receita buscarReceitaId(@NonNull Long id) {

@@ -5,10 +5,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAdicionaDTO;
+import br.dev.ltres.cookin_up_api.dto.receita.ReceitaAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.receita.ReceitaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.services.ReceitaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +22,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/receitas")
@@ -64,4 +68,20 @@ public class ReceitaController {
         return ResponseEntity.created(uri).body(new ReceitaDetalhadaDTO(novaReceita));
     }
 
+    @PutMapping
+    @Operation(summary = "Altera receita", description = "Altera os detalhes de uma receita existente")
+    public ResponseEntity<ReceitaDetalhadaDTO> putMethodName(@RequestBody ReceitaAtualizaDTO receita) {
+        if (receita == null)
+            return ResponseEntity.badRequest().build();
+
+        var receitaAtualizada = receitaService.salvarAtualizaReceita(receita);
+        return ResponseEntity.ok(new ReceitaDetalhadaDTO(receitaAtualizada));
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Remover receita", description = "Remove (desativa) uma receita ativa cadastrada no sistema pelo ID")
+    public ResponseEntity<Void> deleteRemove(@PathVariable @NonNull Long id) {
+        var desativou = receitaService.desativarReceita(id);
+        return desativou ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
 }
