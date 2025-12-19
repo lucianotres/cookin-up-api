@@ -10,7 +10,6 @@ import br.dev.ltres.cookin_up_api.dto.receita.ReceitaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.services.ReceitaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 

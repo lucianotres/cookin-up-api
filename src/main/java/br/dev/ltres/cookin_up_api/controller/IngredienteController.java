@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import br.dev.ltres.cookin_up_api.dto.categoria.CategoriaDetalhadaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAdicionaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteAtualizaDTO;
 import br.dev.ltres.cookin_up_api.dto.ingrediente.IngredienteDetalhaDTO;
